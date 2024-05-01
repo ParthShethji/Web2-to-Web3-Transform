@@ -39,13 +39,20 @@ app.post('/generate_code', async (req, res) => {
 
     // Respond with the generated code
     res.json({ generatedCode });
+    const response = generatedCode;
+    console.log(response)
+    
   } catch (error) {
     console.error('Error generating code:', error);
     res.status(500).json({ error: 'An error occurred while generating code.' });
   }
 });
 
+app.post("/create_ZIP_file", (req,res)=>{} )
 
+app.post("/magic_deploy", (req, res) =>{})
+
+app.post("/Integrating_docs", (req, res) => {})
 
 // Start the server
 app.listen(PORT, () => {

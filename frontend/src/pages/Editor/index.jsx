@@ -76,8 +76,8 @@ function EditorPage() {
   const { user } = useContext(AppContext);
   const { state } = useLocation();
   const [inputQuestions, setInputQuestions] = useState("");
-  const [code, setCode] = useState("");
-  const [summary, setSummary] = useState("");
+  const [code, setCode] = useState("// your code goes here");
+  const [summary, setSummary] = useState("Generate a code first");
   const [tabsLayout, setTabsLayout] = useState([25, 45, 30]);
   const [isDisabled, setIsDisabled] = useState(true);
   const [contractName, setContractName] = useState("");
@@ -87,6 +87,7 @@ function EditorPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contractAdd, setContractAdd] = useState();
   const [currentStep, setCurrentStep] = useState(0);
+
   const handleDownloadHardhat = async () => {
     setCurrentStep(0);
     try {
@@ -105,50 +106,40 @@ function EditorPage() {
         }
       );
       setCurrentStep(2);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      setCurrentStep(3);
-      setABI(response?.data?.ABI);
-      await updateDoc(doc(db, "users", user?.address), {
-        urls: {
-          url: state?.url,
-          abi: response?.data?.ABI,
-          abiUrl: response?.data?.ABI_URI,
-          hardhatUrl: response?.data?.HardHat,
-          contractName: response.data.ABI.contractName,
-        },
-      });
-
-      await new Promise((resolve) => setTimeout(resolve, 6000));
-      setCurrentStep(4);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      window.open(response?.data?.HardHat, "_blank", "noopener,noreferrer");
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  setCurrentStep(3);
+  setABI(response?.data?.ABI);
+  await new Promise((resolve) => setTimeout(resolve, 6000));
+  setCurrentStep(4);
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  window.open(response?.data?.HardHat, "_blank", "noopener,noreferrer");
+  setLoading(false);
+} catch (error) {
+  console.log(error);
+}
   };
 
   const onTabClick = async () => {
     try {
-      const response = await instance.post("generate/code", {
+      const response = await instance.post("/generate_code", {
         approach_heading: state?.selectedOption?.heading,
         approach_content: state?.selectedOption?.content,
         user_approach: inputQuestions,
-        is_test: isTest,
       });
-      console.log(response?.data?.response);
-      setContractName(response?.data?.response?.contract_name);
-      setCode("//" + response?.data?.response?.solidity_code);
-      setSummary(response?.data?.response?.details?.additional_notes);
-      updateDoc(doc(db, "users", user.address), {
-        snippet: {
-          approach_heading: state?.selectedOption?.heading,
-          approach_content: state?.selectedOption?.content,
-          user_approach: inputQuestions,
-          solidity_code: response?.data?.response?.solidity_code,
-          details: response?.data?.response?.details?.additional_notes,
-        },
-      });
+      console.log(response?.data?.generatedCode?.response?.contract_name);
+      setContractName(response?.data?.generatedCode?.response?.contract_name);
+      setCode(response?.data?.generatedCode?.response?.solidity_code);
+      // setCode(response?.response.solidity_code);
+      setSummary(response?.data?.generatedCode?.response?.details?.[0]?.additional_notes);
+      // updateDoc(doc(db, "users", user.address), {
+      //   snippet: {
+      //     approach_heading: state?.selectedOption?.heading,
+      //     approach_content: state?.selectedOption?.content,
+      //     user_approach: inputQuestions,
+      //     solidity_code: response?.solidity_code,
+      //     details: response?.details?.additional_notes,
+      //   },
+      // });
       if (tabsLayout[0] === 25) {
         setTabsLayout([5, 65, 30]);
         setIsDisabled(false);
@@ -376,7 +367,7 @@ function EditorPage() {
               <Editor
                 height="100%"
                 defaultLanguage="sol"
-                value={code || "// Code goes here"}
+                value={code}
                 theme="vs-dark"
                 onChange={(value) => setCode(value)}
               />
