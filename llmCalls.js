@@ -5,7 +5,7 @@ const {
 } = require("@google/generative-ai");
 
 const MODEL_NAME = "gemini-1.0-pro";
-const API_KEY = "";
+const API_KEY = "AIzaSyBfEo7TBJGS6ZLnpckCyHtbkcuNSImsFkI";
 
 
 async function webScrape(url) {
