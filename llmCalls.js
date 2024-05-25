@@ -203,8 +203,8 @@ Inspect the output and then check if there are any error while converting it to 
   
     const responseText = result.response.text();
     const jsonResponse = JSON.parse(responseText);
-    console.log(responseText);
-    console.log(jsonResponse);
+    // console.log(responseText);
+    // console.log(jsonResponse);
     return jsonResponse;
 
   // const jsonResponse = JSON.parse(result.response.text);

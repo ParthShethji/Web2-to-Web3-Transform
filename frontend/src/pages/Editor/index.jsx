@@ -28,6 +28,7 @@ import { TestContext } from "../../context/TestContext";
 import { doc, updateDoc } from "firebase/firestore";
 import Modal from "@mui/material/Modal";
 import CustomizedDialogs from "../../components/LegacyDialog";
+import { userInfo } from "os";
 
 const tempSteps = [
   {
@@ -120,12 +121,19 @@ function EditorPage() {
   };
 
   const onTabClick = async () => {
+
+    console.log(state?.selectedOption?.content)
+    console.log(state?.selectedOption?.heading)
+    console.log(inputQuestions)
+
     try {
-      const response = await instance.post("/generate_code", {
+      const response = await axios.post('http://localhost:3000/generate_code', {
         approach_heading: state?.selectedOption?.heading,
         approach_content: state?.selectedOption?.content,
         user_approach: inputQuestions,
       });
+
+
       console.log(response?.data?.generatedCode?.response?.contract_name);
       setContractName(response?.data?.generatedCode?.response?.contract_name);
       setCode(response?.data?.generatedCode?.response?.solidity_code);

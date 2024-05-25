@@ -6,10 +6,10 @@ const cors = require('cors')
 
 // Create an Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // Parse application/json
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors())
 
 
@@ -32,15 +32,22 @@ app.post('/scrape', async (req, res) => {
 
 app.post('/generate_code', async (req, res) => {
   try {
-    const { approachHeading, approachContent, additionalDetails } = req.body;
+
+    console.log(req.body)
+    const { approach_heading, approach_content, user_approach } = req.body;
 
     // Call the code_generate function with provided parameters
-    const generatedCode = await code_generate(approachHeading, approachContent, additionalDetails);
+    const generatedCode = await code_generate(approach_heading, approach_content, user_approach);
+
+    console.log(approach_heading)
+    console.log(approach_content)
+    console.log(user_approach)
+
 
     // Respond with the generated code
     res.json({ generatedCode });
     const response = generatedCode;
-    console.log(response)
+    // console.log(response)
     
   } catch (error) {
     console.error('Error generating code:', error);
