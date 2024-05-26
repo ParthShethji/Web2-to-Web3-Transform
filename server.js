@@ -33,21 +33,24 @@ app.post('/scrape', async (req, res) => {
 app.post('/generate_code', async (req, res) => {
   try {
 
-    console.log(req.body)
+    // console.log(req.body)
     const { approach_heading, approach_content, user_approach } = req.body;
 
     // Call the code_generate function with provided parameters
     const generatedCode = await code_generate(approach_heading, approach_content, user_approach);
 
-    console.log(approach_heading)
-    console.log(approach_content)
-    console.log(user_approach)
+    // console.log(approach_heading)
+    // console.log(approach_content)
+    // console.log(user_approach)
 
 
     // Respond with the generated code
     res.json({ generatedCode });
     const response = generatedCode;
     // console.log(response)
+
+    const code = generatedCode.response.solidity_code;
+    console.log(code)
     
   } catch (error) {
     console.error('Error generating code:', error);
