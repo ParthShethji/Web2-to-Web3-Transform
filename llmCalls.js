@@ -7,7 +7,7 @@ const {
 const MODEL_NAME = "gemini-1.0-pro";
 const API_KEY = "AIzaSyBfEo7TBJGS6ZLnpckCyHtbkcuNSImsFkI";
 
-
+// prompt - Keep the code simple and secure. Use the the right syntax. Use spdx license by MIT in comments
 async function webScrape(url) {
   const genAI = new GoogleGenerativeAI(API_KEY);
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
@@ -136,8 +136,9 @@ async function code_generate(approachHeading, approachContent, additionalDetails
         Ensure that the generated Solidity code:
         1. Compiles without errors.
         2. Is complete and ready for deployment.
-        3. The version of Solidity used is 0.8.0 and SPDX-License-Identifier should be MIT.
+        3. The version of Solidity used is 0.8.0. andSPDX-License-Identifier should be MIT
         4. Create a 'transfer' function in a smart contract that allows the owner to transfer ownership to a specified address. Only the current owner should have the privilege to invoke this function.
+        5. Try keeping contract name in a single word dont use spaces and special charachers
 
         Note: Consider best practices and security considerations for smart contracts during the development. 
     

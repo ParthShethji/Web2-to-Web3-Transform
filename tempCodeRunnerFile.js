@@ -1,3 +1,1 @@
-text;
-  console.log(jsonResponse);
-  return  jsonResponse;
+contract_code

@@ -93,28 +93,41 @@ function EditorPage() {
     setCurrentStep(0);
     try {
       setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 4000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       setCurrentStep(1);
-      const response = await axios.post(
-        !isTest
-          ? "https://49c4-2409-40f2-18-f350-f485-a4b8-b5b3-ae50.ngrok-free.app"
-          : "https://ethflask-fea7.onrender.com" + "/generateabi",
-        {
+      const response = await axios.post('http://localhost:3000/insert_code',{
           code: code,
-          testing: "",
           contractName: contractName,
-          is_test: isTest,
-        }
-      );
+        });
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
       setCurrentStep(2);
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-  setCurrentStep(3);
-  setABI(response?.data?.ABI);
   await new Promise((resolve) => setTimeout(resolve, 6000));
-  setCurrentStep(4);
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  window.open(response?.data?.HardHat, "_blank", "noopener,noreferrer");
-  setLoading(false);
+  setCurrentStep(3);
+  // setABI(response?.data?.ABI);
+
+    // Make a POST request to the server to download the Hardhat folder
+    const response1 = await axios.post('http://localhost:3000/download_hardhat', {}, {
+    responseType: 'blob' // Specify response type as 'blob' to handle binary data
+  });
+  
+  const url = window.URL.createObjectURL(new Blob([response1.data], { type: 'application/zip' }));
+
+  // Create a link element to trigger the download
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'hardhat_folder.zip';
+  document.body.appendChild(link);
+await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Simulate a click on the link to trigger the download automatically
+    link.click();
+        
+    // Cleanup
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+ 
+setLoading(false);
 } catch (error) {
   console.log(error);
 }
@@ -531,11 +544,10 @@ function EditorPage() {
       </Box>
       <CustomizedDialogs
         steps={[
-          "Scaffolding hardhat",
+          "Testing the contract",
           "Inserting your contract",
-          "Running npc hardhat compile",
+          "Compiling Contract",
           "Zipping files",
-          "Uploading to lighthouse",
         ]}
         text={"Downloading Hardhat"}
         setOpen={setLoading}
