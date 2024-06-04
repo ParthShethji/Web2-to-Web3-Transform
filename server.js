@@ -1,7 +1,8 @@
 // Import necessary libraries
 const express = require('express');
 const bodyParser = require('body-parser');
-const {webScrape, code_generate} = require("./llmCalls")
+const {webScrape, code_generate, } = require("./llmCalls")
+const {doc_generate} = require("./test")
 const {compileContract} = require("./magicDeploy")
 const fs = require('fs')
 const path = require('path');
@@ -81,10 +82,10 @@ app.post('/insert_code', async (req, res) => {
 
 
     // console.log(contractName)
-    console.log("started")
+    console.log("started insertion")
     const contractPath = path.join(__dirname, "/Hardhat/contracts/Test.sol");
     fs.writeFileSync(contractPath, code);
-    console.log("Done")
+    console.log("Done inserting and testing")
 
     // Compile the contract
     // const { bytecode, abi } = compileContract(contractName, code);
@@ -110,7 +111,8 @@ app.post('/download_hardhat', (req, res) => {
     if (!fs.existsSync(hardhatFolderPath)) {
       return res.status(400).json({ error: "Hardhat folder path does not exist." });
     }
-
+    console.log("compilation done")
+    console.log("zipping started")
     // Create a zip file in memory
     const zip = new AdmZip();
     zip.addLocalFolder(hardhatFolderPath);
@@ -125,13 +127,42 @@ app.post('/download_hardhat', (req, res) => {
 
     // Send the zip file buffer
     res.send(zipBuffer);
+    console.log("zipping done")
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: "Internal server error." });
   }
 });
 
-// app.post("/Integrating_docs", (req, res) => {})
+const artifactFolderPath = './Hardhat/artifacts';
+
+app.post("/download_artifacts", async (req, res) => {
+  try {
+    // Check if the directory exists
+    if (!fs.existsSync(hardhatFolderPath)) {
+      return res.status(400).json({ error: "artifact folder path does not exist." });
+    }
+    console.log("download started")
+    // Create a zip file in memory
+    const zip = new AdmZip();
+    zip.addLocalFolder(artifactFolderPath);
+
+    // Convert the zip file to a buffer
+    const zipBuffer = zip.toBuffer();
+
+    // Set headers to indicate that the response is a zip file and force download
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', 'attachment; filename=artifact_folder.zip');
+    res.setHeader('Content-Length', zipBuffer.length);
+
+    // Send the zip file buffer
+    res.send(zipBuffer);
+    console.log("download done")
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+})
 
 // Start the server
 app.listen(PORT, () => {

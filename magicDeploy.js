@@ -52,7 +52,7 @@ const compileContract = (fileName, contractName) => {
 
 const { Web3 } = require("web3");
 
-const provider = new Web3.providers.HttpProvider("https://rpc-mumbai.maticvigil.com/");
+const provider = new Web3.providers.HttpProvider("https://rpc-sepolia.ethereum.com/");
 const web3 = new Web3(provider);
 
 const deployContract = async (bytecode, abi, privateKey) => {
@@ -76,3 +76,4 @@ const deployContract = async (bytecode, abi, privateKey) => {
 // Usage
 // const privateKey = "0x96e2ee3510fb7814b8f07956122eb36790b1f9937625bef049e3920f9e52b1d7";
 // deployContract(bytecode, abi, privateKey);
+module.exports = {compileContract, deployContract}

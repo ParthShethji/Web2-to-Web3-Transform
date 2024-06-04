@@ -28,6 +28,8 @@ import { TestContext } from "../../context/TestContext";
 import { doc, updateDoc } from "firebase/firestore";
 import Modal from "@mui/material/Modal";
 import CustomizedDialogs from "../../components/LegacyDialog";
+import SuccessTick from "../../components/Lottie/SuccessTick";
+
 // import { userInfo } from "os";
 
 const tempSteps = [
@@ -126,6 +128,7 @@ await new Promise((resolve) => setTimeout(resolve, 1000));
     // Cleanup
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
+
  
 setLoading(false);
 } catch (error) {
@@ -146,6 +149,7 @@ setLoading(false);
         user_approach: inputQuestions,
       });
 
+      // <SuccessTick/>
 
       console.log(response?.data?.generatedCode?.response?.contract_name);
       setContractName(response?.data?.generatedCode?.response?.contract_name);
@@ -407,6 +411,7 @@ setLoading(false);
                 isDisabled={isDisabled}
                 icon={<LuHardHat color="black" />}
                 onClick={() => handleDownloadHardhat()}
+                
               />
             </Box>
           </Box>

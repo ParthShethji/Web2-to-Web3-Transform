@@ -242,7 +242,7 @@ function Doc() {
         text: 'Get signature and smart contract',
         code: `const provider = new providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
-const contract = new Contract(${contractAddress}, ${contractName}.abi, signer);`,
+const contract = new Contract(contractAddress, ABI, signer);`,
       },
       {
         id: 3,
@@ -250,6 +250,12 @@ const contract = new Contract(${contractAddress}, ${contractName}.abi, signer);`
         text: 'Integrate the system',
         code: stringOfID3,
       },
+      // {
+      //   id: 4,
+      //   type: 'react',
+      //   text: 'Integrate the contract functions',
+      //   code: ,
+      // },
     ];
     setSnippets(temp);
   }, [contractAddress, contractName, selectedFunction]);
@@ -265,31 +271,29 @@ const contract = new Contract(${contractAddress}, ${contractName}.abi, signer);`
     getData();
   }, [response]);
 
+
+
   const handleArtifactDownload = async () => {
-    setTimeout(() => {
-      window.open(response?.abiUrl, '_blank', 'noopener,noreferrer');
-    }, 5000);
-    return;
-    axios
-      .post('http://127.0.0.1:5002/getABI', {
-        code: code,
-        contractName: contractName,
-      })
-      .then((res) => {
-        console.log('CID', res.data.CID);
-        console.log(
-          'IPFS URL',
-          `https://gateway.lighthouse.storage/ipfs/${res.data.CID}`
-        );
-        window.open(
-          `https://gateway.lighthouse.storage/ipfs/QmbPWxcRnKq2bQqNPuzq9cTqKCiVAFky6xRN4ZZuD7VRNE`,
-          '_blank',
-          'noopener,noreferrer'
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const response1 = await axios.post('http://localhost:3000/download_artifacts', {}, {
+      responseType: 'blob' // Specify response type as 'blob' to handle binary data
+    });
+    
+    const url = window.URL.createObjectURL(new Blob([response1.data], { type: 'application/zip' }));
+  
+    // Create a link element to trigger the download
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'artifact_folder.zip';
+    document.body.appendChild(link);
+  // await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+      // Simulate a click on the link to trigger the download automatically
+      link.click();
+          
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+  
   };
 
   React.useEffect(() => {

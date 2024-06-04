@@ -30,12 +30,12 @@ function Navbar() {
           }} 
          />
       </Box>
-      <Box display="flex" alignItems="center" justifyContent="center">
+      {/* <Box display="flex" alignItems="center" justifyContent="center">
         <img src="./creditIcon.svg" alt="Credit Icon" />
         <Typography variant="body" px={1}>
           100 Credits
         </Typography>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

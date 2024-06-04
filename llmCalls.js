@@ -5,7 +5,7 @@ const {
 } = require("@google/generative-ai");
 
 const MODEL_NAME = "gemini-1.0-pro";
-const API_KEY = "AIzaSyBfEo7TBJGS6ZLnpckCyHtbkcuNSImsFkI";
+const API_KEY = "api";
 
 // prompt - Keep the code simple and secure. Use the the right syntax. Use spdx license by MIT in comments
 async function webScrape(url) {
@@ -160,42 +160,6 @@ async function code_generate(approachHeading, approachContent, additionalDetails
 Inspect the output and then check if there are any error while converting it to json if yes then handle the issues any missing commas or quotes and then return the output
 `}];
 
-  //   {text: `Your task is to create a Solidity smart contract that integrates a specified approach into a web application. Below are the details of the approach, and you need to provide the corresponding Solidity code. Ensure that the generated code compiles without errors, follows best practices, and adheres to security considerations.
-
-  //   Approach:
-    
-  //   Heading: ${approachHeading}
-  //   Content: ${approachContent}
-  //   Additional Details: ${additionalDetails}
-
-
-  //   Requirements:
-  //   Solidity version: 0.8.0
-  //   SPDX-License-Identifier: MIT
-  //   Functionality:
-  //   Create a 'transfer' function within the smart contract that allows the owner to transfer ownership to a specified address. Only the current owner should have the privilege to invoke this function.
-    
-  //   Considerations:
-    
-  //   Ensure that the Solidity code is robust and secure.
-  //   Follow best practices for smart contract development.
-  //   Output Format:
-  //   Provide the generated Solidity code along with relevant details in the following schema:
-  //   {
-  //     "response": {
-  //         "solidity_code": "Generated Solidity code for the specified approach",
-  //         "contract_name": "Name of the smart contract",
-  //         "details": [
-  //             "compilation_status_confidence": "Confidence level for compilation status (1-100)",
-  //             "completeness_confidence": "Confidence level for completeness (1-100)",
-  //             "additional_notes": "Description of all functions except 'transfer' and contract functionality"
-  //         ],
-  //         "description": "Schema for representing the generated Solidity code and related details."
-  //     }
-  // }
-  // Inspect the output to ensure correctness. Handle any JSON conversion errors if they arise before returning the output.`}]
-  
-// I want the output  and  in following schema and make sure that there are no backticks involved give the output in precise schema below
     const result = await model.generateContent({
       contents: [{ role: "user", parts }],
       generationConfig,
@@ -225,7 +189,6 @@ Inspect the output and then check if there are any error while converting it to 
 //   "Airdrop NFTs to your existing user base and create an NFT marketplace where users can buy, sell, and trade digital assets. This will allow users to create and trade unique digital assets that represent their creativity and individuality. Additionally, you can use decentralized autonomous organizations (DAOs) to create mechanisms to govern the app and make decisions about the future of the platform",
 //   ""
 // );
-
 
 
 

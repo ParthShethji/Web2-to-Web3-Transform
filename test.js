@@ -1,3 +1,6 @@
+const fs= require('fs')
+
+
 const {
   GoogleGenerativeAI,
   HarmCategory,
@@ -227,9 +230,80 @@ Inspect the output and then check if there are any error while converting it to 
 //   "Airdrop NFTs to your existing user base and create an NFT marketplace where users can buy, sell, and trade digital assets. This will allow users to create and trade unique digital assets that represent their creativity and individuality. Additionally, you can use decentralized autonomous organizations (DAOs) to create mechanisms to govern the app and make decisions about the future of the platform",
 //   ""
 // );
+const codePath = './Hardhat/contracts/Test.sol'
+const sourceCode = fs.readFileSync(codePath, "utf8");
+
+async function doc_generate() {
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+  const generationConfig = {
+    temperature: 0.9,
+    topK: 1,
+    topP: 1,
+    maxOutputTokens: 2048,
+  };
+
+  const safetySettings = [
+    {
+      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    },
+  ];
+
+  
+  
+  const parts = [
+    {text: `Your task is to create code that can integrates solidity with  node.js application Here is my solidity code ${sourceCode}  understand all the functions that are used in this and then generate me code using ethers.js for functions one by one so that i can integrate it into my node js file. Use the following schema for output. The output is in json format.
+    Dont use any backslashes and all that conflicts with the structure of json. Keep the output stricly in json
+    {
+      "response": {
+            "docs": [
+                {
+                  "function_name": "Name of the function",
+                  "code": "give the code that uses ether.js to connect solidity code and node.js "
+                },
+                {
+                  "function_name": "Name of the function",
+                  "code": "give the code that uses ether.js to connect solidity code and node.js "
+                },
+                {
+                  "function_name": "Name of the function",
+                  "code": "give the code that uses ether.js to connect solidity code and node.js "}
+            ],
+      }
+  }`},
+  ];
+
+  const result = await model.generateContent({
+    contents: [{ role: "user", parts }],
+    generationConfig,
+    safetySettings,
+  });
+
+  const responseText = result.response.text();
+  const jsonResponse = JSON.parse(responseText);
+  
+  console.log(jsonResponse);
+  return jsonResponse;
+  // console.log(responseText)
+
+ 
+}
 
 
 
-
-module.exports = { webScrape, code_generate };
+module.exports = { webScrape, code_generate, doc_generate };
 // webScrape("https://www.amazon.com/")
