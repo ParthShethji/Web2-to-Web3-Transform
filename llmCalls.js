@@ -1,3 +1,7 @@
+
+require('dotenv').config();
+
+
 const {
   GoogleGenerativeAI,
   HarmCategory,
@@ -5,7 +9,9 @@ const {
 } = require("@google/generative-ai");
 
 const MODEL_NAME = "gemini-1.0-pro";
-const API_KEY = "api";
+const API_KEY = process.env.gemini_api;
+
+// console.log(API_KEY)
 
 // prompt - Keep the code simple and secure. Use the the right syntax. Use spdx license by MIT in comments
 async function webScrape(url) {

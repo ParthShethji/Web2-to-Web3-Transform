@@ -2,7 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const {webScrape, code_generate, } = require("./llmCalls")
-const {doc_generate} = require("./test")
+// const {doc_generate} = require("./test")
 const {compileContract} = require("./magicDeploy")
 const fs = require('fs')
 const path = require('path');
@@ -55,12 +55,16 @@ app.post('/generate_code', async (req, res) => {
     let contractName = generatedCode.response.contract_name;
     module.exports = {contractName, contractCode}
 
+    // console.log("started insertion")
+    // const contractPath = path.join(__dirname, "/Hardhat/contracts/Lock.sol");
+    // fs.writeFileSync(contractPath, contractCode);
+    // console.log("Done inserting")
     // Respond with the generated code
     res.json({ generatedCode });
-    const response = generatedCode;
-    // console.log(response)
 
- 
+
+    // const response = generatedCode;
+    // console.log(response)
     // console.log(code)
     // console.log(name)
   
@@ -83,7 +87,7 @@ app.post('/insert_code', async (req, res) => {
 
     // console.log(contractName)
     console.log("started insertion")
-    const contractPath = path.join(__dirname, "/Hardhat/contracts/Test.sol");
+    const contractPath = path.join(__dirname, "/Hardhat/contracts/Lock.sol");
     fs.writeFileSync(contractPath, code);
     console.log("Done inserting and testing")
 
@@ -99,6 +103,50 @@ app.post('/insert_code', async (req, res) => {
 
   res.status(200).json({ message: "Code processed successfully" });
 });
+
+
+// app.post('/compile-code', async(req, res)=>{
+//   try {
+//     const { contractName } = req.body;
+//     console.log(contractName)
+//     if (!contractName) {
+//       return res.status(400).json({ error: "contractName is required." });
+//     }
+//     console.log("started compilation")
+//     compileContract(contractName)
+//     console.log("code compiled")
+//     res.status(200).json({ message: "Code compiled successfully" });
+
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal server error" });
+
+//   }})
+
+
+app.post('/compile-code', async (req, res) => {
+  try {
+    console.log("starting to compile")
+    const { contractName } = req.body;
+    if (!contractName) {
+      return res.status(400).json({ error: 'contractName is required.' });
+    }
+    console.log('Started compilation');
+    const result = compileContract(contractName);
+    console.log('Code compiled');
+
+    res.status(200).json({
+      message: 'Code compiled successfully',
+      // data: result,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 
 
 // Path to the modified Hardhat folder
@@ -134,7 +182,7 @@ app.post('/download_hardhat', (req, res) => {
   }
 });
 
-const artifactFolderPath = './Hardhat/artifacts';
+const artifactFolderPath = './Hardhat/test';
 
 app.post("/download_artifacts", async (req, res) => {
   try {

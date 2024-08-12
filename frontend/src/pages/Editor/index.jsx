@@ -97,21 +97,22 @@ function EditorPage() {
       setLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 3000));
       setCurrentStep(1);
-      const response = await axios.post('http://localhost:3000/insert_code',{
+       await axios.post('http://localhost:3000/insert_code',{
           code: code,
           contractName: contractName,
         });
         await new Promise((resolve) => setTimeout(resolve, 3000));
 
       setCurrentStep(2);
-  await new Promise((resolve) => setTimeout(resolve, 6000));
+      await axios.post('http://localhost:3000/compile-code', {
+        contractName: contractName,
+      });
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   setCurrentStep(3);
-  // setABI(response?.data?.ABI);
-
-    // Make a POST request to the server to download the Hardhat folder
-    const response1 = await axios.post('http://localhost:3000/download_hardhat', {}, {
+  const response1 = await axios.post('http://localhost:3000/download_hardhat', {
     responseType: 'blob' // Specify response type as 'blob' to handle binary data
   });
+  console.log("download started")
   
   const url = window.URL.createObjectURL(new Blob([response1.data], { type: 'application/zip' }));
 

@@ -2,16 +2,18 @@ const solc = require("solc");
 const fs = require("fs");
 const path = require("path");
 
-const compileContract = (fileName, contractName) => {
-  // Read the Solidity source code from the file system
-  const contractPath = path.join(__dirname, fileName);
-  const sourceCode = fs.readFileSync(contractPath, "utf8");
 
+
+const compileContract = (contractName) => {
+  // Read the Solidity source code from the file system
+  const contractPath = './Hardhat/contracts/Lock.sol';
+  const sourceCode = fs.readFileSync(contractPath, "utf8");
+  // const Contract_name = JSON.stringify(contractName)
   // solc compiler config
   const input = {
     language: "Solidity",
     sources: {
-      [fileName]: {
+      'Lock.sol': {
         content: sourceCode,
       },
     },
@@ -23,28 +25,41 @@ const compileContract = (fileName, contractName) => {
       },
     },
   };
+  console.log("Compiler input:", JSON.stringify(input, null, 2));
 
   // Compile the Solidity code using solc
-  const compiledCode = JSON.parse(solc.compile(JSON.stringify(input)));
+  const compilationResult = solc.compile(JSON.stringify(input));
+  // console.log("Compilation result:", compilationResult);
+  compiledCode = JSON.parse(compilationResult);
   console.log(compiledCode);
+  
 
   // Get the bytecode and ABI from the compiled contract
-  const bytecode = compiledCode.contracts[fileName][contractName].evm.bytecode.object;
-  const abi = compiledCode.contracts[fileName][contractName].abi;
+  const bytecode = compiledCode.contracts["Lock.sol"][contractName].evm.bytecode.object;
+  console.log("got bytecode")
+  const abi = compiledCode.contracts['Lock.sol'][contractName].abi;
 
-  // Write the bytecode to a new file
-  const bytecodePath = path.join(__dirname, "MyContractBytecode.bin");
-  fs.writeFileSync(bytecodePath, bytecode);
+  // // Write the bytecode to a new file
+  // const bytecodePath = './Hardhat/artifacts/build-info/ByteCode.json';
+  // fs.writeFileSync(bytecodePath, bytecode);
 
-  // Write the Contract ABI to a new file
-  const abiPath = path.join(__dirname, "MyContractAbi.json");
-  fs.writeFileSync(abiPath, JSON.stringify(abi, null, "\t"));
+  // // Write the Contract ABI to a new file
+  // const abiPath = '/Hardhat/artifacts/contracts/Lock.sol/ContractABI.json';
+  // fs.writeFileSync(abiPath, JSON.stringify(abi, null, "\t"));
+
+  const contractData = {
+    abi: abi,
+    bytecode: bytecode,
+};
+
+const data = './Hardhat/artifacts/contracts/Lock.sol/ContractData.json';
+fs.writeFileSync(data, JSON.stringify(contractData, null, 2));
 
   // Log the compiled contract code to the console
   console.log("Contract Bytecode:\n", bytecode);
   console.log("Contract ABI:\n", abi);
-
-  return { bytecode, abi };
+  console.log("data written to path")
+  // return { bytecode, abi };
 };
 
 // Usage
