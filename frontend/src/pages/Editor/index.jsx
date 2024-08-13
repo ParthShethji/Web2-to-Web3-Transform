@@ -28,7 +28,16 @@ import { TestContext } from "../../context/TestContext";
 import { doc, updateDoc } from "firebase/firestore";
 import Modal from "@mui/material/Modal";
 import CustomizedDialogs from "../../components/LegacyDialog";
-import SuccessTick from "../../components/Lottie/SuccessTick";
+import { ethers6Adapter } from "thirdweb/adapters/ethers6";
+import { useActiveAccount } from "thirdweb/react";
+import { sepolia } from "thirdweb/chains";
+import { client } from "../../components/Navbar";
+// import { injectedProvider } from "thirdweb/wallets";
+
+
+// import SuccessTick from "../../components/Lottie/SuccessTick";
+// // import { useActiveAccount, useSigner } from "thirdweb/react";
+import { ethers } from 'ethers';
 
 // import { userInfo } from "os";
 
@@ -86,6 +95,7 @@ function EditorPage() {
   const [contractName, setContractName] = useState("");
   const isTest = React.useContext(TestContext);
   const [ABI, setABI] = useState();
+  const [byteCode, setByteCode] = useState();
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [contractAdd, setContractAdd] = useState();
@@ -104,10 +114,21 @@ function EditorPage() {
         await new Promise((resolve) => setTimeout(resolve, 3000));
 
       setCurrentStep(2);
-      await axios.post('http://localhost:3000/compile-code', {
+      const data = await axios.post('http://localhost:3000/compile-code', {
         contractName: contractName,
       });
+      // console.log(data)
+      console.log(data?.data?.data?.abi)
+      console.log(data?.data?.data?.bytecode)
+      setABI(data?.data?.data?.abi)
+      setByteCode(data?.data?.data?.bytecode)
+
+      // console.log(ABI)
+      // console.log(byteCode)
+    
   await new Promise((resolve) => setTimeout(resolve, 2000));
+  console.log(ABI)
+  console.log(byteCode)
   setCurrentStep(3);
   const response1 = await axios.post('http://localhost:3000/download_hardhat', {
     responseType: 'blob' // Specify response type as 'blob' to handle binary data
@@ -129,7 +150,7 @@ await new Promise((resolve) => setTimeout(resolve, 1000));
     // Cleanup
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
-
+console.log("download completed")
  
 setLoading(false);
 } catch (error) {
@@ -178,32 +199,129 @@ setLoading(false);
     }
   };
 
+  // const deployContract = async () => {
+  //   try {
+  //     const response = await axios.post(
+  //         "https://magic-deploy.onrender.com/deploy-contract",
+  //       {
+  //         rpc: "https://rpc.public.zkevm-test.net",
+  //         bytecode: ABI?.bytecode,
+  //         abi: ABI?.abi,
+  //         is_test: isTest,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     console.log("deploy", response?.data);
+  //     setContractAdd(response?.data?.contractAddress);
+  //     await updateDoc(doc(db, "users", user?.address), {
+  //       contractAddress: response?.data?.contractAddress,
+  //     });
+  //     setIsModalOpen(true);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  // const client = process.env.client_ID
+  
+  
+// const client = "179874cf01f3ef6b1e707e5d2e07590e"
+const chain = sepolia
+const account = useActiveAccount();
+// const metamaskProvider = injectedProvider("io.metamask");
+
   const deployContract = async () => {
-    try {
-      const response = await axios.post(
-          "https://magic-deploy.onrender.com/deploy-contract",
-        {
-          rpc: "https://rpc.public.zkevm-test.net",
-          bytecode: ABI?.bytecode,
-          abi: ABI?.abi,
-          is_test: isTest,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("deploy", response?.data);
-      setContractAdd(response?.data?.contractAddress);
-      await updateDoc(doc(db, "users", user?.address), {
-        contractAddress: response?.data?.contractAddress,
-      });
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error(error);
+    console.log("getting acc")
+// console.log(account.address)
+    const signer = await ethers6Adapter.signer.toEthers({ client, chain, account });
+    // const signer = metamaskProvider.getSigner();4
+      // const signer = client.wallet.getSigner();
+
+    console.log(signer)
+    if (!signer) {
+        alert('Please connect your wallet first.');
+        return;
     }
-  };
+
+    console.log("got acc, dep started")
+    try {
+        // const factory = new ethers.ContractFactory(ABI, byteCode, signer);
+        // console.log('ethers version:', ethers.version);
+
+
+        // console.log('Deploying contract...');
+        // console.log('Initiating contract deployment...');
+        // const deploymentPromise = factory.deploy();
+        // console.log('Deployment promise created');
+        // const contract = await deploymentPromise;
+
+        // console.log('Waiting for contract to be mined...');
+        // await contract.waitForDeployment();
+
+        // console.log('Contract deployed at address:', contract.address);
+        // setContractAdd(contract.address);
+        // console.log(contractAdd)
+
+        console.log('Creating contract factory...');
+    const factory = new ethers.ContractFactory(ABI, byteCode, signer);
+
+    console.log('Preparing deployment transaction...');
+    const deployTransaction = factory.getDeployTransaction();
+    console.log('Deploy transaction:', deployTransaction);
+    console.log("API Key:", client.apiKey); // Assuming `client` holds your thirdweb provider
+
+    console.log('Estimating gas...');
+    const estimatedGas = await signer.estimateGas(deployTransaction);
+    console.log('Estimated gas:', estimatedGas.toString());
+
+    console.log('Sending deployment transaction...');
+    const tx = await signer.sendTransaction(deployTransaction);
+    console.log('Transaction sent:', tx.hash);
+
+    console.log('Waiting for transaction confirmation...');
+    const receipt = await tx.wait();
+    console.log('Transaction confirmed:', receipt);
+
+    console.log('Contract deployed at:', receipt.contractAddress);
+
+    setContractAdd(receipt.contractAddress);
+        setIsModalOpen(true);
+
+    } catch (error) {
+        console.error('Error deploying contract:', error);
+        alert('Error deploying contract. Check the console for details.');
+    } 
+};
+
+ 
+// const deployContracts = async () => {
+//   try {
+//     // Deploy the contract
+//     const address = await deployContract({
+//       client,
+//       chain,
+//       byteCode, // Replace with your contract's bytecode
+//       signer: client.wallet.getSigner(),
+//       constructorAbi: {
+//         inputs: [{ type: "uint256", name: "value" }],
+//         type: "constructor",
+//         constructorParams: [],
+
+//       },
+    
+//     });
+
+//   console.log(address);
+
+// } catch(error){
+//   console.log(error)
+// }
+// }
+
+
 
   useEffect(() => {
     localStorage.setItem("code", code);

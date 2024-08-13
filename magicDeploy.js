@@ -59,11 +59,9 @@ fs.writeFileSync(data, JSON.stringify(contractData, null, 2));
   console.log("Contract Bytecode:\n", bytecode);
   console.log("Contract ABI:\n", abi);
   console.log("data written to path")
-  // return { bytecode, abi };
+  return { bytecode, abi };
 };
 
-// Usage
-//const { bytecode, abi } = compileContract("Test.sol", "Greeter");
 
 const { Web3 } = require("web3");
 

@@ -137,7 +137,7 @@ app.post('/compile-code', async (req, res) => {
 
     res.status(200).json({
       message: 'Code compiled successfully',
-      // data: result,
+      data: result,
     });
   } catch (error) {
     console.error('Error:', error);

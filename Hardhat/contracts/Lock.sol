@@ -1,37 +1,32 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
-contract Charity {
-    address public owner;
+contract SupplyChain {
+    // Define variables for tracking products and their ownership
+    mapping(uint256 => address) public productOwners;
+    mapping(uint256 => string) public productNames;
 
+    // Constructor function
     constructor() {
-        owner = msg.sender;
+        // Initialize the productOwners mapping with the address of the contract deployer as the owner of all products.
+        for (uint256 i = 0; i < 100; i++) {
+            productOwners[i] = msg.sender;
+        }
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can call this function.");
-        _;
+    // Function to set the name of a product
+    function setProductName(uint256 _productId, string memory _productName) public {
+        require(productOwners[_productId] == msg.sender, "Only the owner can set the product name");
+        productNames[_productId] = _productName;
     }
 
-    function transferOwnership(address newOwner) public onlyOwner {
-        require(newOwner != address(0), "New owner cannot be the zero address.");
-        owner = newOwner;
-    }
+    // Function to transfer ownership of a product
+    function transferOwnership(uint256 _productId, address _newOwner) public {
+        // Check if the caller is the current owner of the product
+        require(productOwners[_productId] == msg.sender, "Only the current owner can transfer ownership");
+        require(_newOwner != address(0), "New owner cannot be the zero address");
 
-    function donate(address charity) public payable {
-        require(msg.value > 0, "Donation amount must be greater than 0");
-        payable(charity).transfer(msg.value);
-    }
-
-    function withdraw(uint256 amount) public onlyOwner {
-        require(address(this).balance >= amount, "Insufficient balance");
-        payable(msg.sender).transfer(amount);
-    }
-
-    receive() external payable {}
-
-    function getBalance() public view returns (uint256) {
-        return address(this).balance;
+        // Update the productOwners mapping with the new owner's address
+        productOwners[_productId] = _newOwner;
     }
 }
