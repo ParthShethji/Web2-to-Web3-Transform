@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { createThirdwebClient } from "thirdweb";
 import { ConnectButton } from "thirdweb/react";
-import { sepolia } from "thirdweb/chains";
+import { sepolia, polygonAmoy } from "thirdweb/chains";
 
 
 export const client = createThirdwebClient({ clientId: "179874cf01f3ef6b1e707e5d2e07590e" });
@@ -45,7 +45,7 @@ function Navbar() {
         <Typography variant="body" px={1} marginRight={5}>
           100 Credits
         </Typography>
-        <ConnectButton client={client} chain={sepolia}/>
+        <ConnectButton client={client} chain={polygonAmoy}/>
 
       </Box>
     </Box>

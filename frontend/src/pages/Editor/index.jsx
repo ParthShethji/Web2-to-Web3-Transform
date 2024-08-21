@@ -30,7 +30,7 @@ import Modal from "@mui/material/Modal";
 import CustomizedDialogs from "../../components/LegacyDialog";
 import { ethers6Adapter } from "thirdweb/adapters/ethers6";
 import { useActiveAccount } from "thirdweb/react";
-import { sepolia } from "thirdweb/chains";
+import { sepolia, polygonAmoy } from "thirdweb/chains";
 import { client } from "../../components/Navbar";
 // import { injectedProvider } from "thirdweb/wallets";
 
@@ -229,7 +229,7 @@ setLoading(false);
   
   
 // const client = "179874cf01f3ef6b1e707e5d2e07590e"
-const chain = sepolia
+const chain = polygonAmoy
 const account = useActiveAccount();
 // const metamaskProvider = injectedProvider("io.metamask");
 
