@@ -87,6 +87,5 @@ const deployContract = async (bytecode, abi, privateKey) => {
 };
 
 // Usage
-// const privateKey = "0x96e2ee3510fb7814b8f07956122eb36790b1f9937625bef049e3920f9e52b1d7";
 // deployContract(bytecode, abi, privateKey);
 module.exports = {compileContract, deployContract}
